@@ -1,0 +1,111 @@
+.main {
+    position: relative;
+    width: 60%;
+    margin: 5rem auto 10rem auto;
+}
+
+.input-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3),
+.input-group:not(.has-validation)>:not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
+    border-radius: 4px;
+}
+
+.form-control {
+    padding-left: 1rem;
+}
+
+button {
+    margin-left: 1rem;
+}
+
+#spinner {
+    margin: 5rem auto auto auto;
+    display: none;
+}
+
+#result {
+    position: relative;
+    top: 1rem;
+    left: -1rem;
+    height: 500px;
+}
+
+li {
+    list-style-type: none;
+    font-size: larger;
+    border-bottom: 1px solid lightgrey;
+    margin: 1rem 0 1rem 0;
+    padding-bottom: 1rem;
+}
+
+li a:link {
+    text-decoration: none;
+}
+
+li a:visited {
+    text-decoration: none;
+}
+
+li a:hover {
+    text-decoration: underline;
+}
+
+li a:active {
+    text-decoration: underline;
+}
+
+#company {
+    position: relative;
+}
+
+#companyImage {
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 5rem;
+}
+
+#companyName {
+    position: absolute;
+    left: 6rem;
+    top: 0;
+}
+
+#companyDescription {
+    position: absolute;
+    left: 0;
+    top: 12rem;
+}
+
+#companyLink {
+    position: absolute;
+    right: 0;
+    top: 5rem;
+    display: none;
+}
+
+#companyStockPrice {
+    position: absolute;
+    left: 0;
+    top: 7rem;
+    font-size: larger;
+    font-weight: bold;
+    display: inline-block;
+}
+
+#companyStockPercentages {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.myChart-container {
+    position: absolute;
+    left: 0;
+    top: 12rem; 
+    width: 95%;
+}
+
+#myChart {
+    position: absolute;
+    left: 0;
+    top: 15rem;
+}

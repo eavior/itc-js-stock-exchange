@@ -1,0 +1,119 @@
+let urlParams = new URLSearchParams(window.location.search);
+let inputValue = "";
+for (let value of urlParams.values()) {
+    inputValue = value;
+}
+
+getAllData(inputValue);
+
+function getAllData (inputValue) {
+    document.getElementById("spinner").style.display = "block";
+    getCompanyData(inputValue);
+    getStockData(inputValue);
+    document.getElementById("spinner").style.display = "none";
+}
+
+async function getCompanyData(symbol) {
+    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/company/profile/${symbol}`).then(response => {
+        if (!response.ok) {
+            response.text().then(text => {
+                alert(text);
+            })
+        } else {
+            response.json().then(data => {
+                    let companyImage = document.createElement('img');
+                    companyImage.setAttribute("src", data.profile.image);
+                    companyImage.id = 'companyImage';
+                    companyImage.setAttribute("alt", data.profile.companyName);
+                    document.getElementById("company").appendChild(companyImage);
+
+                    let companyName = document.createElement('h1');
+                    companyName.id = 'companyName';
+                    companyName.innerHTML = data.profile.companyName;
+                    document.getElementById("company").appendChild(companyName);
+
+                    let companyDescription = document.createElement('div');
+                    companyDescription.id = 'companyDescription';
+                    companyDescription.innerHTML = data.profile.description;
+                    document.getElementById("company").appendChild(companyDescription);
+
+                    let companyLink = document.createElement('a');
+                    companyLink.id = 'companyLink';
+                    let companyLinkText = document.createTextNode(data.profile.website);
+                    companyLink.appendChild(companyLinkText);
+                    companyLink.href = data.profile.website;
+                    companyLink.target = "_blank";
+                    document.getElementById("company").appendChild(companyLink);
+
+                    let companyStockPrice = document.createElement('div');
+                    companyStockPrice.id = 'companyStockPrice';
+                    companyStockPrice.innerHTML = `Stock price: ${data.profile.currency} ${data.profile.price}`;
+                    document.getElementById("company").appendChild(companyStockPrice);
+
+                    let companyStockPercentages = document.createElement('div');
+                    companyStockPercentages.id = 'companyStockPercentages';
+                    companyStockPercentages.innerHTML = data.profile.changesPercentage;
+                    if (data.profile.changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
+                    else companyStockPercentages.style.color = 'green';
+                    document.getElementById("companyStockPrice").appendChild(companyStockPercentages);
+                }   
+            )
+        }
+    })
+};
+
+let historicalArray = [];
+let datesArray = [];
+let closeArray = [];
+
+async function getStockData(symbol) {
+    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/historical-price-full/${symbol}?serietype=line`).then(response => {
+        if (!response.ok) {
+            response.text().then(text => {
+                alert(text);
+            })
+        } else {
+            response.json().then(data => {
+                    let arrayFromHTMLCollection = Array.from(data.historical);
+                    let sortedArray = arrayFromHTMLCollection.slice(0);
+                    console.log(sortedArray);
+
+                    console.log(Object.keys(sortedArray).length);
+                    let decrementBy = Math.round((Object.keys(sortedArray).length) / 20);
+                    console.log(decrementBy);
+                    for (let i = data.historical.length - 1; i > 0; i -= decrementBy) {
+                        closeArray.push(data.historical[i].close);
+                        datesArray.push(data.historical[i].date);
+                    }
+                    createChart(datesArray, closeArray);
+                }     
+            )
+        }
+    })
+};
+
+function createChart(datesArray, closeArray) {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datesArray,
+            datasets: [{
+                label: 'Stock Price History',
+                data: closeArray,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
