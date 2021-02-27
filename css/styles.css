@@ -1,55 +1,85 @@
+feature-wrapper {
+}
+
+#marquee {
+	width: 100%;
+  height:30px;
+  overflow: hidden;
+  position: relative;
+}
+#marquee p {
+  position: absolute;
+  /* changed the width to be 100% */
+  width: 100%;
+  height: 100%;
+  font-size:13px;
+  line-height: 20px;
+	margin: 0;
+	line-height: 30px;
+  /* changed the text-align to be left */
+  text-align: left;
+  white-space:nowrap;
+  transform: translateX(100%);
+  animation: scroll-left 100s linear infinite;
+  animation-delay : -49s;
+}  
+
+@-moz-keyframes scroll-left {
+  0% {
+    -moz-transform: translateX(100%);
+  }
+  100% {
+    -moz-transform: translateX(-100%);
+  }
+}
+
+@-webkit-keyframes scroll-left {
+  0% {
+    -webkit-transform: translateX(100%);
+  }
+  100% {
+    -webkit-transform: translateX(-100%);
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    -moz-transform: translateX(100%);
+    /* Browser bug fix */
+    
+    -webkit-transform: translateX(100%);
+    /* Browser bug fix */
+    
+    transform: translateX(100%);
+  }
+  100% {
+    -moz-transform: translateX(-100%);
+    /* Browser bug fix */
+    
+    -webkit-transform: translateX(-100%);
+    /* Browser bug fix */
+    
+    transform: translateX(-100%);
+  }
+}
+
 .main {
-    position: relative;
-    width: 60%;
-    margin: 5rem auto 10rem auto;
-}
+  position: relative;
+  width: 60%;
+  height: 100%;
+  margin: 1rem auto 1rem auto;
 
-.input-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3),
-.input-group:not(.has-validation)>:not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
-    border-radius: 4px;
-}
-
-.form-control {
-    padding-left: 1rem;
-}
-
-button {
-    margin-left: 1rem;
 }
 
 #spinner {
     margin: 5rem auto auto auto;
-    display: none;
 }
 
-#result {
-    position: relative;
-    top: 1rem;
-    left: -1rem;
-    height: 500px;
-}
-
-li {
-    list-style-type: none;
-    font-size: larger;
-    border-bottom: 1px solid lightgrey;
-    margin: 1rem 0 1rem 0;
-    padding-bottom: 1rem;
-}
-
-li a:link {
+li a:link, li a:visited {
     text-decoration: none;
 }
 
-li a:visited {
-    text-decoration: none;
-}
-
-li a:hover {
-    text-decoration: underline;
-}
-
-li a:active {
+li a:hover, li a:active  {
     text-decoration: underline;
 }
 

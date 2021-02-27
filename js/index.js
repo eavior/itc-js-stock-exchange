@@ -1,107 +1,118 @@
+// Default URL
+const defaultURL = "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3";
+
+// Declaration of global variables + retrieve and define DOM elements
+
 const searchButton = document.getElementById('searchButton');
-const searchInput = document.getElementById('searchInput');
-
-searchButton.addEventListener('click', () => {
-    startSearch();
-});
-
-document.querySelector('#searchInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') startSearch();
-});
-
-function startSearch() {
-    document.getElementById("spinner").style.display = "block";
-    item = document.querySelector('#result');
-    while (item.firstChild) {
-        item.removeChild(item.firstChild);
-    }
-    const inputValue = searchInput.value;
-    getServerResults(inputValue);
-}
-
-let sortChoice = "Name Asc";
-
+const inputValue = document.getElementById('inputValue');
+const resultsList = document.querySelector('#resultsList');
 let newArray = [];
 
-async function getServerResults(inputValue) {
+// Event listeners
+searchButton.addEventListener('click', () => {
+    startSearch(inputValue.value);
+});
+document.querySelector('#inputValue').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+    startSearch(inputValue.value);
+    e.preventDefault();
+}
+});
 
-    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/search?query=${inputValue}&limit=10&exchange=NASDAQ`).then(response => {
-        if (!response.ok) {
-            response.text().then(text => {
-                document.getElementById("spinner").style.display = "none";
-                let serverError = document.createElement("div");
-                serverError.innerHTML = text;
-                serverError.setAttribute("id", "serverError");
-                document.getElementById("result").appendChild(serverError);
-            })
-        } else {
-            response.json().then(data => {
-                let arrayFromHTMLCollection = Array.from(data);
-                newArray = arrayFromHTMLCollection.slice(0);
-                newArray.sort((a, b) => a.name - b.name); // Why doesn't this work? Sorting does not take place.
-
-                let resultList = document.createElement("ul");
-                resultList.id = "listHolder";
-                document.getElementById("result").appendChild(resultList);
-
-                for (let j = 0; j < newArray.length; j++) {
-                    console.log(newArray[j].symbol);
-                    fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/company/profile/${newArray[j].symbol}`).then(response => {
-                        if (!response.ok) {
-                            response.text().then(text => {
-                                alert(text);
-                            })
-                        } else {
-                            response.json().then(data => {
-                                let resultListItem = document.createElement("li");
-
-                                let companyImage = document.createElement('img');
-                                companyImage.setAttribute("src", data.profile.image);
-                                // companyImage.setAttribute("width", "304");
-                                companyImage.setAttribute("height", "50px");
-                                companyImage.setAttribute("alt", data.profile.companyName);
-                                resultListItem.appendChild(companyImage);
-
-                                let a = document.createElement('a');
-                                let linkText = document.createTextNode(`   ${data.profile.companyName}   `);
-                                a.appendChild(linkText);
-                                a.href = `html/company.html?symbol=${newArray[j].symbol}`;
-                                a.target = "_blank";
-                                resultListItem.appendChild(a);
-
-                                let companySymbol = document.createElement('span');
-                                // companySymbol.id = 'companySymbol';
-                                companySymbol.innerHTML = `${newArray[j].symbol}   `;
-                                resultListItem.appendChild(companySymbol);
-
-                                let companyStockPercentages = document.createElement('span');
-                                // companyStockPercentages.id = 'companyStockPercentages';
-                                companyStockPercentages.innerHTML = data.profile.changesPercentage;
-                                if (data.profile.changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
-                                else companyStockPercentages.style.color = 'green';
-                                resultListItem.appendChild(companyStockPercentages);
-
-                                document.getElementById("listHolder").appendChild(resultListItem);
-                            })
-                        }
-                    });
-                }
-                document.getElementById("spinner").style.display = "none";
-            })
-        }
-    })
+// Start the search
+async function startSearch(inputValue) {
+    document.getElementById("results").innerHTML = "";
+    document.getElementById("serverError").innerHTML = "";
+    spinner.classList.remove('d-none');
+    try {
+        const data = await getServerResults(inputValue);   
+    } catch (error) {
+        serverError.textContent = error.message;
+        serverError.classList.remove('d-none');
+    }
+    spinner.classList.add('d-none');
 }
 
-async function getCompanyData(symbol) {
-    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/company/profile/${symbol}`).then(response => {
-        if (!response.ok) {
-            response.text().then(text => {
-                alert(text);
-            })
-        } else {
-            response.json().then(data => {
-                return data.profile;
-            })
+async function getServerResults(inputValue) {
+    const response = await fetch(`${defaultURL}/search?query=${inputValue}&limit=10&exchange=NASDAQ`);
+    if (response.ok) {
+        const data = await response.json();
+        let arrayFromHTMLCollection = Array.from(data);
+        newArray = arrayFromHTMLCollection.slice(0);
+        newArray.sort((a, b) => a.name - b.name); // Why doesn't this work? Sorting does not take place.
+        for (let j = 0; j < newArray.length; j++) {
+            fetch(`${defaultURL}/company/profile/${newArray[j].symbol}`).then(response => {
+                if (!response.ok) {
+                    response.text().then(text => {
+                        alert(text);
+                    })
+                } else {
+                    response.json().then(data => {
+                        newArray[j].image = data.profile.image;
+                        newArray[j].companyName = data.profile.companyName;
+                        newArray[j].changesPercentage = data.profile.changesPercentage;
+                        appendToList(newArray, j);
+                    })
+                }
+            });
         }
-    })
-};
+        return newArray;
+    } else {
+        const text = await response.text();
+        throw new Error(text);
+    }
+}
+
+function appendToList(newArray, j) {
+    // UL
+    let resultList = document.createElement("ul");
+    resultList.id = "listHolder";
+    resultList.classList.add("list-group", "list-group-flush", "mt-4", "row", "col-lg-10", "col-md-8", "col-sm-4", "col-xs-2");
+    document.getElementById("results").appendChild(resultList);
+    // LI
+    let resultListItem = document.createElement("li");
+    resultListItem.classList.add("list-group-item");
+    // IMG
+    let companyImage = document.createElement('img');
+    companyImage.setAttribute("src", newArray[j].image);
+    companyImage.setAttribute("height", "30px");
+    companyImage.setAttribute("alt", newArray[j].companyName);
+    resultListItem.appendChild(companyImage);
+    // A with company name
+    let a = document.createElement('a');
+    let linkText = document.createTextNode(`   ${newArray[j].companyName}   `);
+    a.appendChild(linkText);
+    a.href = `html/company.html?symbol=${newArray[j].symbol}`;
+    a.target = "_blank";
+    resultListItem.appendChild(a);
+    // Symbol
+    let companySymbol = document.createElement('span');
+    companySymbol.innerHTML = `${newArray[j].symbol}   `;
+    resultListItem.appendChild(companySymbol);
+    // Stock percentage
+    let companyStockPercentages = document.createElement('span');
+    companyStockPercentages.innerHTML = newArray[j].changesPercentage;
+    if (newArray[j].changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
+    else companyStockPercentages.style.color = 'green';
+    resultListItem.appendChild(companyStockPercentages);
+    document.getElementById("listHolder").appendChild(resultListItem);
+}
+
+
+// async function getProfileResults(data) {
+//     let localArray = [];
+//     for (let i = 0; i < data.length; i++) {
+//         let symbol = data[i].symbol;
+//         const response = await fetch(`${defaultURL}company/profile/${data[i].symbol}`);
+//         if (response.ok) {
+//             const data = await response.json();
+//             let obj = `{symbol2:"${symbol}",companyName2:"${data.profile.companyName}",image2:"${data.profile.image}",changesPercentage2:"${data.profile.changesPercentage}"}`;
+//             localArray.push(obj);
+//         } else {
+//             const text = await response.text();
+//             throw new Error(text);
+//         }
+//     }
+//     return localArray;
+// }
+

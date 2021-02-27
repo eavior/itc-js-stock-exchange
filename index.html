@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,21 +11,36 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
-    <div class="main">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search this site" id="searchInput">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button" id="searchButton">
-                    <i class="fas fa-search"></i>
-                </button>
+    <div id="marquee"></div>
+    <div class="feature-wrapper pt-5 pb-5 mt-5 mt-lg-0">
+        <div class="container pt-5">
+            <div class="form-group">
+                <form id="searchForm" class="row">
+                    <div class="col-lg-10 col-md-8 col-sm-4 col-xs-2">
+                        <input type="text" class="form-control" placeholder="Search this site" id="inputValue">
+                    </div>
+                    <div class="input-group-append col-sm-1">
+                        <button class="btn btn-primary mb-2 float-end" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div id="spinner" class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
+        <div class="container mt-2">
+            <div class="d-flex align-items-center">
+                <div id="spinner" class="spinner-border text-left d-none" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div id="serverError" class="text-danger d-none"></div>
+            </div>
+            <div id="results"></div>
         </div>
-        <div id="result"></div>
     </div>
     <script src="./js/index.js"></script>
+    <script src="./js/marquee.js"></script>
 </body>
+
 </html>

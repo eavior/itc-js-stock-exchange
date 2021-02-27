@@ -1,3 +1,6 @@
+// Default URL
+const defaultURL = "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3";
+
 let urlParams = new URLSearchParams(window.location.search);
 let inputValue = "";
 for (let value of urlParams.values()) {
@@ -6,15 +9,15 @@ for (let value of urlParams.values()) {
 
 getAllData(inputValue);
 
-function getAllData (inputValue) {
+async function getAllData (inputValue) {
     document.getElementById("spinner").style.display = "block";
-    getCompanyData(inputValue);
-    getStockData(inputValue);
+    await getCompanyData(inputValue);
+    await getStockData(inputValue);
     document.getElementById("spinner").style.display = "none";
 }
 
 async function getCompanyData(symbol) {
-    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/company/profile/${symbol}`).then(response => {
+    await fetch(`${defaultURL}/company/profile/${symbol}`).then(response => {
         if (!response.ok) {
             response.text().then(text => {
                 alert(text);
@@ -67,7 +70,7 @@ let datesArray = [];
 let closeArray = [];
 
 async function getStockData(symbol) {
-    await fetch(`https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/historical-price-full/${symbol}?serietype=line`).then(response => {
+    await fetch(`${defaultURL}/historical-price-full/${symbol}?serietype=line`).then(response => {
         if (!response.ok) {
             response.text().then(text => {
                 alert(text);
@@ -76,11 +79,7 @@ async function getStockData(symbol) {
             response.json().then(data => {
                     let arrayFromHTMLCollection = Array.from(data.historical);
                     let sortedArray = arrayFromHTMLCollection.slice(0);
-                    console.log(sortedArray);
-
-                    console.log(Object.keys(sortedArray).length);
                     let decrementBy = Math.round((Object.keys(sortedArray).length) / 20);
-                    console.log(decrementBy);
                     for (let i = data.historical.length - 1; i > 0; i -= decrementBy) {
                         closeArray.push(data.historical[i].close);
                         datesArray.push(data.historical[i].date);
