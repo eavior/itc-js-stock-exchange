@@ -7,7 +7,6 @@ for (let value of urlParams.values()) {
     inputValue = value;
 }
 
-
 getAllData(inputValue);
 
 async function getAllData (inputValue) {
