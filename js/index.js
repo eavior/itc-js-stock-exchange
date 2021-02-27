@@ -14,23 +14,28 @@ searchButton.addEventListener('click', () => {
 });
 document.querySelector('#inputValue').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-    startSearch(inputValue.value);
-    e.preventDefault();
-}
+        startSearch(inputValue.value);
+        e.preventDefault();
+    }
 });
 
 // Start the search
 async function startSearch(inputValue) {
     document.getElementById("results").innerHTML = "";
     document.getElementById("serverError").innerHTML = "";
+    searchButton.classList.add('d-none');
     spinner.classList.remove('d-none');
     try {
-        const data = await getServerResults(inputValue);   
+        const data = await getServerResults(inputValue);
+        searchButton.classList.remove('d-none');
+        spinner.classList.add('d-none');
+
     } catch (error) {
         serverError.textContent = error.message;
+        searchButton.classList.remove('d-none');
+        spinner.classList.add('d-none');
         serverError.classList.remove('d-none');
     }
-    spinner.classList.add('d-none');
 }
 
 async function getServerResults(inputValue) {
@@ -78,41 +83,26 @@ function appendToList(newArray, j) {
     companyImage.setAttribute("height", "30px");
     companyImage.setAttribute("alt", newArray[j].companyName);
     resultListItem.appendChild(companyImage);
+    // Empty spaces
+    let emptySpaces = document.createElement('span');
+    emptySpaces.innerHTML = `&nbsp&nbsp&nbsp`;
+    resultListItem.appendChild(emptySpaces);
     // A with company name
     let a = document.createElement('a');
-    let linkText = document.createTextNode(`   ${newArray[j].companyName}   `);
+    let linkText = document.createTextNode(`${newArray[j].companyName}`);
     a.appendChild(linkText);
     a.href = `html/company.html?symbol=${newArray[j].symbol}`;
     a.target = "_blank";
     resultListItem.appendChild(a);
     // Symbol
     let companySymbol = document.createElement('span');
-    companySymbol.innerHTML = `${newArray[j].symbol}   `;
+    companySymbol.innerHTML = `&nbsp&nbsp&nbsp<sup>${newArray[j].symbol}</sup>`;
     resultListItem.appendChild(companySymbol);
     // Stock percentage
     let companyStockPercentages = document.createElement('span');
-    companyStockPercentages.innerHTML = newArray[j].changesPercentage;
+    companyStockPercentages.innerHTML = `<sup>&nbsp${newArray[j].changesPercentage}</sup>`;
     if (newArray[j].changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
     else companyStockPercentages.style.color = 'green';
     resultListItem.appendChild(companyStockPercentages);
     document.getElementById("listHolder").appendChild(resultListItem);
 }
-
-
-// async function getProfileResults(data) {
-//     let localArray = [];
-//     for (let i = 0; i < data.length; i++) {
-//         let symbol = data[i].symbol;
-//         const response = await fetch(`${defaultURL}company/profile/${data[i].symbol}`);
-//         if (response.ok) {
-//             const data = await response.json();
-//             let obj = `{symbol2:"${symbol}",companyName2:"${data.profile.companyName}",image2:"${data.profile.image}",changesPercentage2:"${data.profile.changesPercentage}"}`;
-//             localArray.push(obj);
-//         } else {
-//             const text = await response.text();
-//             throw new Error(text);
-//         }
-//     }
-//     return localArray;
-// }
-

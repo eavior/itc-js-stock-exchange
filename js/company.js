@@ -7,13 +7,14 @@ for (let value of urlParams.values()) {
     inputValue = value;
 }
 
+
 getAllData(inputValue);
 
 async function getAllData (inputValue) {
-    document.getElementById("spinner").style.display = "block";
+    spinner.classList.remove('d-none');
     await getCompanyData(inputValue);
     await getStockData(inputValue);
-    document.getElementById("spinner").style.display = "none";
+    spinner.classList.add('d-none');
 }
 
 async function getCompanyData(symbol) {
@@ -28,7 +29,9 @@ async function getCompanyData(symbol) {
                     companyImage.setAttribute("src", data.profile.image);
                     companyImage.id = 'companyImage';
                     companyImage.setAttribute("alt", data.profile.companyName);
-                    document.getElementById("company").appendChild(companyImage);
+                    companyImage.setAttribute("height", "60px");
+                    companyImage.setAttribute("vertical-align", "text-top");
+                    document.getElementById("company-image").appendChild(companyImage);
 
                     let companyName = document.createElement('h1');
                     companyName.id = 'companyName';
@@ -38,7 +41,7 @@ async function getCompanyData(symbol) {
                     let companyDescription = document.createElement('div');
                     companyDescription.id = 'companyDescription';
                     companyDescription.innerHTML = data.profile.description;
-                    document.getElementById("company").appendChild(companyDescription);
+                    document.getElementById("description").appendChild(companyDescription);
 
                     let companyLink = document.createElement('a');
                     companyLink.id = 'companyLink';
@@ -46,19 +49,19 @@ async function getCompanyData(symbol) {
                     companyLink.appendChild(companyLinkText);
                     companyLink.href = data.profile.website;
                     companyLink.target = "_blank";
-                    document.getElementById("company").appendChild(companyLink);
+                    document.getElementById("company-link").appendChild(companyLink);
 
                     let companyStockPrice = document.createElement('div');
                     companyStockPrice.id = 'companyStockPrice';
                     companyStockPrice.innerHTML = `Stock price: ${data.profile.currency} ${data.profile.price}`;
-                    document.getElementById("company").appendChild(companyStockPrice);
+                    document.getElementById("price").appendChild(companyStockPrice);
 
                     let companyStockPercentages = document.createElement('div');
                     companyStockPercentages.id = 'companyStockPercentages';
                     companyStockPercentages.innerHTML = data.profile.changesPercentage;
                     if (data.profile.changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
                     else companyStockPercentages.style.color = 'green';
-                    document.getElementById("companyStockPrice").appendChild(companyStockPercentages);
+                    document.getElementById("percentage").appendChild(companyStockPercentages);
                 }   
             )
         }
