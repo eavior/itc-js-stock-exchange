@@ -1,13 +1,60 @@
+const defaultURL = "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3";
+
 class Marquee {
-    constructor(id) {
-        this.id = id;
+    constructor(DOMelement) {
+        this.DOMelement = DOMelement;
+        this.init();
+
     }
-    load() {
+    init() {
         // from: https://financialmodelingprep.com/developer/docs
         document.addEventListener('DOMContentLoaded', () => {
-            getRequest(`${defaultURL}/stock/actives`, createMarquee);
+            this.getRequest(`${defaultURL}/stock/actives`, this.createMarquee);
         })
     }
+
+    createMarquee(responseText) {
+        let resp = Object.values(JSON.parse(responseText).mostActiveStock);
+        let marqueeText = document.createElement("p");
+        marqueeText.innerHTML = "";
+        for (let i = 0; i < resp.length; i++) {
+            let financial = resp[i];
+            let newMarqueeElement = new MarqueeElement(financial.ticker, financial.price);
+            marqueeText.innerHTML += newMarqueeElement.toString();
+        }
+        marqueeText.innerHTML = marqueeText.innerHTML + marqueeText.innerHTML + marqueeText.innerHTML;
+        document.getElementById("marquee").appendChild(marqueeText);
+    }
+
+    getRequest(url, success) {
+        var req = false;
+        try {
+            req = new XMLHttpRequest();
+        } catch (e) {
+            try {
+                req = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                try {
+                    req = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {
+                    return false;
+                }
+            }
+        }
+        if (!req) return false;
+        if (typeof success != 'function') success = function () {};
+        req.onreadystatechange = function () {
+            if (req.readyState == 4) {
+                if (req.status === 200) {
+                    success(req.responseText)
+                }
+            }
+        }
+        req.open("GET", url, true);
+        req.send(null);
+        return req;
+    }
+
 }
 
 class MarqueeElement {
@@ -20,44 +67,3 @@ class MarqueeElement {
     }
 }
 
-function createMarquee(responseText) {
-    let resp = Object.values(JSON.parse(responseText).mostActiveStock);
-    let marqueeText = document.createElement("p");
-    marqueeText.innerHTML = "";
-    for (let i = 0; i < resp.length; i++) {
-        let financial = resp[i];
-        let newMarqueeElement = new MarqueeElement(financial.ticker, financial.price);
-        marqueeText.innerHTML += newMarqueeElement.toString();
-    }
-    marqueeText.innerHTML = marqueeText.innerHTML + marqueeText.innerHTML + marqueeText.innerHTML;
-    document.getElementById("marquee").appendChild(marqueeText);
-}
-
-function getRequest(url, success) {
-    var req = false;
-    try {
-        req = new XMLHttpRequest();
-    } catch (e) {
-        try {
-            req = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            try {
-                req = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (e) {
-                return false;
-            }
-        }
-    }
-    if (!req) return false;
-    if (typeof success != 'function') success = function () {};
-    req.onreadystatechange = function () {
-        if (req.readyState == 4) {
-            if (req.status === 200) {
-                success(req.responseText)
-            }
-        }
-    }
-    req.open("GET", url, true);
-    req.send(null);
-    return req;
-}
