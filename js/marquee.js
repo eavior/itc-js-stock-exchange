@@ -4,8 +4,8 @@ class Marquee {
     constructor(DOMelement) {
         this.DOMelement = DOMelement;
         this.init();
-
     }
+
     init() {
         // from: https://financialmodelingprep.com/developer/docs
         document.addEventListener('DOMContentLoaded', () => {
@@ -14,15 +14,15 @@ class Marquee {
     }
 
     createMarquee(responseText) {
-        let resp = Object.values(JSON.parse(responseText).mostActiveStock);
-        let marqueeText = document.createElement("p");
-        marqueeText.innerHTML = "";
+        const resp = Object.values(JSON.parse(responseText).mostActiveStock);
+        const marqueeText = document.createElement("p");
+        let marqueeString = "";
         for (let i = 0; i < resp.length; i++) {
             let financial = resp[i];
             let newMarqueeElement = new MarqueeElement(financial.ticker, financial.price);
-            marqueeText.innerHTML += newMarqueeElement.toString();
+            marqueeString += newMarqueeElement.toString();
         }
-        marqueeText.innerHTML = marqueeText.innerHTML + marqueeText.innerHTML + marqueeText.innerHTML;
+        marqueeText.innerHTML = marqueeString.repeat(10);
         document.getElementById("marquee").appendChild(marqueeText);
     }
 
@@ -66,4 +66,3 @@ class MarqueeElement {
         return `${this.ticker} <strong style="color: #008000">$${this.price}</strong>&nbsp&nbsp&nbsp&nbsp&nbsp`;
     }
 }
-

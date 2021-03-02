@@ -9,7 +9,7 @@ for (let value of urlParams.values()) {
 
 getAllData(inputValue);
 
-async function getAllData (inputValue) {
+async function getAllData(inputValue) {
     spinner.classList.remove('d-none');
     await getCompanyData(inputValue);
     await getStockData(inputValue);
@@ -24,48 +24,51 @@ async function getCompanyData(symbol) {
             })
         } else {
             response.json().then(data => {
-                    let companyImage = document.createElement('img');
-                    companyImage.setAttribute("src", data.profile.image);
-                    companyImage.id = 'companyImage';
-                    companyImage.setAttribute("alt", data.profile.companyName);
-                    companyImage.setAttribute("height", "60px");
-                    companyImage.setAttribute("vertical-align", "text-top");
-                    document.getElementById("company-image").appendChild(companyImage);
-
-                    let companyName = document.createElement('h1');
-                    companyName.id = 'companyName';
-                    companyName.innerHTML = data.profile.companyName;
-                    document.getElementById("company").appendChild(companyName);
-
-                    let companyDescription = document.createElement('div');
-                    companyDescription.id = 'companyDescription';
-                    companyDescription.innerHTML = data.profile.description;
-                    document.getElementById("description").appendChild(companyDescription);
-
-                    let companyLink = document.createElement('a');
-                    companyLink.id = 'companyLink';
-                    let companyLinkText = document.createTextNode(data.profile.website);
-                    companyLink.appendChild(companyLinkText);
-                    companyLink.href = data.profile.website;
-                    companyLink.target = "_blank";
-                    document.getElementById("company-link").appendChild(companyLink);
-
-                    let companyStockPrice = document.createElement('div');
-                    companyStockPrice.id = 'companyStockPrice';
-                    companyStockPrice.innerHTML = `Stock price: ${data.profile.currency} ${data.profile.price}`;
-                    document.getElementById("price").appendChild(companyStockPrice);
-
-                    let companyStockPercentages = document.createElement('div');
-                    companyStockPercentages.id = 'companyStockPercentages';
-                    companyStockPercentages.innerHTML = data.profile.changesPercentage;
-                    if (data.profile.changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
-                    else companyStockPercentages.style.color = 'green';
-                    document.getElementById("percentage").appendChild(companyStockPercentages);
-                }   
-            )
+                processData(data);
+            })
         }
     })
 };
+
+function processData(data) {
+    const companyImage = document.createElement('img');
+    companyImage.setAttribute("src", data.profile.image);
+    companyImage.id = 'companyImage';
+    companyImage.setAttribute("alt", data.profile.companyName);
+    companyImage.setAttribute("height", "60px");
+    companyImage.setAttribute("vertical-align", "text-top");
+    document.getElementById("company-image").appendChild(companyImage);
+
+    const companyName = document.createElement('h1');
+    companyName.id = 'companyName';
+    companyName.innerHTML = data.profile.companyName;
+    document.getElementById("company").appendChild(companyName);
+
+    const companyDescription = document.createElement('div');
+    companyDescription.id = 'companyDescription';
+    companyDescription.innerHTML = data.profile.description;
+    document.getElementById("description").appendChild(companyDescription);
+
+    const companyLink = document.createElement('a');
+    companyLink.id = 'companyLink';
+    const companyLinkText = document.createTextNode(data.profile.website);
+    companyLink.appendChild(companyLinkText);
+    companyLink.href = data.profile.website;
+    companyLink.target = "_blank";
+    document.getElementById("company-link").appendChild(companyLink);
+
+    const companyStockPrice = document.createElement('div');
+    companyStockPrice.id = 'companyStockPrice';
+    companyStockPrice.innerHTML = `Stock price: ${data.profile.currency} ${data.profile.price}`;
+    document.getElementById("price").appendChild(companyStockPrice);
+
+    const companyStockPercentages = document.createElement('div');
+    companyStockPercentages.id = 'companyStockPercentages';
+    companyStockPercentages.innerHTML = data.profile.changesPercentage;
+    if (data.profile.changesPercentage.includes("-")) companyStockPercentages.style.color = 'red';
+    else companyStockPercentages.style.color = 'green';
+    document.getElementById("percentage").appendChild(companyStockPercentages);
+}
 
 let historicalArray = [];
 let datesArray = [];
@@ -79,16 +82,15 @@ async function getStockData(symbol) {
             })
         } else {
             response.json().then(data => {
-                    let arrayFromHTMLCollection = Array.from(data.historical);
-                    let sortedArray = arrayFromHTMLCollection.slice(0);
-                    let decrementBy = Math.round((Object.keys(sortedArray).length) / 20);
-                    for (let i = data.historical.length - 1; i > 0; i -= decrementBy) {
-                        closeArray.push(data.historical[i].close);
-                        datesArray.push(data.historical[i].date);
-                    }
-                    createChart(datesArray, closeArray);
-                }     
-            )
+                const arrayFromHTMLCollection = Array.from(data.historical);
+                const sortedArray = arrayFromHTMLCollection.slice(0);
+                const decrementBy = Math.round((Object.keys(sortedArray).length) / 20);
+                for (let i = data.historical.length - 1; i > 0; i -= decrementBy) {
+                    closeArray.push(data.historical[i].close);
+                    datesArray.push(data.historical[i].date);
+                }
+                createChart(datesArray, closeArray);
+            })
         }
     })
 };
