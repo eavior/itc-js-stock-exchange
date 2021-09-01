@@ -1,4 +1,4 @@
-# itc-js-stock-exchange
+# About this project
 Project of the ITC full stack development course.
 
 Multipage stock exchange data website, based on Financial Modeling Prep (https://financialmodelingprep.com/).
